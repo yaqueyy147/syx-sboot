@@ -1,0 +1,110 @@
+<#include "common/header-title.html" />
+<link rel="stylesheet" href="${adminCtxStatics}/js/ztree/css/zTreeStyle/zTreeStyle.css"/>
+<body>
+<input type="hidden" name="roleid" id="roleid" value="${roleid!}"/>
+<div class="save" id="btn-div">
+	<button class="btn-saveblue mr10" id="btn-save"><i class="icon-save"></i>保存</button>
+	<button class="btn-returngray" id="btn-cancel"><i class="icon-return"></i>取消</button>
+</div>
+<div class="frm-content frm-bottom">
+	<div class="page-box">
+		<div id="treeRolefunction" class="ztree" style="height:400px; overflow:auto;"></div>
+	</div>
+</div>
+<script type="text/javascript" src="${adminCtxStatics}/js/ztree/js/jquery.ztree.all-3.5.js"></script>
+<script>
+	var getrolefunction_url = '${adminCtx}/backstage/sys/roleFunctionData.htm';
+	var saverolefunction_url = '${adminCtx}/backstage/sys/roleFunctionSave.htm';
+	var treeRolefunction;
+	//初始化按钮
+	$(function () {
+
+        var setting = {
+            check: {
+                enable: true
+            },
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            }
+        };
+        var roleid =  $("#roleid").val();
+        var obj_loading = Loading.show("page-box");
+        $.ajax({
+            async: true,
+            type: "post",
+            dataType: "json",
+            url: getrolefunction_url,// + "?jsonCallBack=?"
+            data: {roleid: roleid},
+            crossDomain: true,
+            complete: function () {
+                //关闭遮挡层
+                Loading.hide(obj_loading);
+            },
+            success: function (data) {
+                treeRolefunction = $.fn.zTree.init($("#treeRolefunction"), setting, data);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                message.warning("提示", "网络请求出错,请联系管理员");
+            }
+        });
+
+        $('#btn-save').YButon({
+            text: "保存",//按钮内容
+            iconCls: 'icon-save',//按钮图标
+            buttonCls: 'btn-saveblue',
+            handler: function () {
+                if(treeRolefunction!= null){
+                    var treeData = treeRolefunction.getCheckedNodes(true);
+                    var treevalue='';
+                    var _i = 0;
+                    $.each(treeData, function (i, item) {
+                        if(_i > 0){
+                            treevalue = treevalue + ",";
+                        }
+                        treevalue += item['id'];
+                        _i++;
+                    });
+                    //保存相关信息
+                    var roleid =  $("#roleid").val();
+                    var obj_loading = Loading.show("page-box");
+                    $.ajax({
+                        async: true,
+                        type: "get",
+                        dataType: "jsonp",
+                        url: saverolefunction_url + "?jsonCallBack=?",
+                        data: {roleid: roleid, ids: treevalue},
+                        crossDomain: true,
+                        complete: function () {
+                            //关闭遮挡层
+                            Loading.hide(obj_loading);
+                        },
+                        success: function (data) {
+                            if(data.code){
+                                message.success("提示", "保存成功");
+                                window.parent.window.$('.icon-dclose').click();
+                            }
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            message.warning("提示", "网络请求出错,请联系管理员");
+                        }
+                    });
+
+                }
+            }
+        });
+        $('#btn-cancel').YButon({
+            text: "取消",//按钮内容
+            iconCls: 'icon-return',//按钮图标
+            buttonCls: 'btn-returngray',
+            handler: function () {
+                window.parent.window.$('.icon-dclose').click();
+            }
+        });
+    });
+
+	
+  </script>
+
+</body>

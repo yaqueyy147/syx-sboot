@@ -1,0 +1,314 @@
+<#include "common/header-title.html" />
+
+<body>
+<div class="hlideal-tabnav-content">
+	
+	<div class="search-bg">
+	    <form action="" class="sui-form">
+	        <dl class="form-item">
+	            <dt class="title">姓名：</dt>
+	            <dd class="detail">
+	                <label>
+	                    <input type="text" class="sui-input" name="name"  id="search_name" />
+	                </label>
+	            </dd>
+	        </dl>
+	        <dl class="form-item">
+	            <dt class="title"></dt>
+	            <dd class="detail">
+	                <button type="button" class="hlideal-btn btn-blue" id="btn-search">搜索</button>
+                	<button type="reset" class="hlideal-btn btn-gray">重置</button>
+	            </dd>
+	        </dl>  
+	    </form>
+	</div>
+	<table id="tb-dbdatagrid" class="sui-datagrid table-list" zdata-options={"url":"${adminCtx}/backstage/sys/queryStaffList.htm?jsonCallBack=?","fitColumns":true,"singleSelect":false,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":15,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list"}>
+        <thead>
+	    <tr>
+	        <th data-options="field:loginname">用户名</th>
+	        <th data-options="field:name">姓名</th>
+	        <th data-options="field:mobilephone">手机</th>
+	        <th data-options="field:loginflag" formatter="enableFormatter">允许登录</th>
+	        <th data-options="field:id,opername:操作" opertrans="true"><a class="operhandler" handler="doEdit02">修改</a></th>
+	    </tr>
+	    </thead>
+	</table>
+	<div id="btn-applylist" >
+        <a class="sui-toolbar" id="btn-add"  text="增加" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doNew"></a>
+        <a class="sui-toolbar" id="btn-modify" text="修改" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doEdit"></a>
+        <a class="sui-toolbar" id="btn-del" text="删除" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doDel"></a> 
+        <a class="sui-toolbar" id="btn-roleset" text="角色设置" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doRoleset"></a>
+    </div>
+</div>
+
+<div id="staff_form_window" style="display: none;">
+	<div class="clearfix mt20">
+		<form id="staff_form"  class="sui-form" method="post" enctype="multipart/form-data"  zdata-options={"url":"${adminCtx}/backstage/sys/staffSaveData.htm?jsonCallBack=?","callBack":"callBackFn"}>
+			<input type="hidden" name="id" id="id" value=""/>
+			<dl class="form-item">
+				<dt class="title sptitle">员工编号:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input" id="staffno" name="staffno" />
+					</label>
+				</dd>
+			</dl>
+			<dl class="form-item">
+				<dt class="title sptitle">姓名:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="name" name="name" />
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>
+			<dl class="form-item">
+				<dt class="title sptitle">用户名:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="loginname" name="loginname" />
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>
+			<dl class="form-item">
+				<dt class="title sptitle">密码:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input" id="loginpwd" name="loginpwd" />
+					</label>
+				</dd>
+			</dl>			
+			<dl class="form-item">
+				<dt class="title sptitle">手机号码:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="mobilephone" name="mobilephone" />
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>
+			<dl class="form-item">
+				<dt class="title sptitle">允许登录:</dt>
+				<dd class="detail">
+					<label>
+						 <input type="hidden" validate-type="Require" id="loginflag" name="loginflag" 
+			            	data-data="[{'id':'1','text':'是'},{'id':'0','text':'否'}]"
+							data-valuefield="id" data-textfield="text" data-defaultvalue="1" class="sui-combobox sui-validatebox">
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>						
+		</form>
+	</div>
+</div>
+<div id="staffroleset_frame_window">
+	<iframe id="staffroleset_frame" scrolling="no" marginwidth="0" width="100%" height="100%" frameborder="0" marginheight="0"></iframe>
+</div>
+
+<div id="staffdicset_frame_window">
+	<iframe id="staffdicset_frame" scrolling="no" marginwidth="0" width="100%" height="100%" frameborder="0" marginheight="0"></iframe>
+</div>
+
+<script>
+	var uri_del_staff = '${adminCtx}/backstage/sys/staffDeleteData.htm';
+	var uri_staffroleset = '${adminCtx}/backstage/sys/staffroleset.htm';
+	var uri_staffdicset = '${adminCtx}/backstage/sys/staffdicset.htm';
+    $(function() {
+        $("#staff_form_window").Dialog({
+            width: 700,
+            height: 500,
+            title: '进度节点编辑',
+            closed:true,
+            buttons:[{
+                id:'message-btn',
+                text:'确定',
+                buttonCls:'btn-blue',
+                handler:function(){
+                    if($("#id").val() =='' && $("#loginpwd").val()==''){
+                        message.error("错误", '新建用户请设置密码', function () {});
+                        return;
+                    }
+                    $("#staff_form").submit();
+                }
+            },{
+                id:'message-btn',
+                text:'取消',
+                buttonCls:'btn-gray',
+                handler:function(){
+                    $("#staff_form_window").Dialog("close");
+                }
+            }]
+        });
+
+        $('#staffroleset_frame_window').Dialog({
+            width	: 600,
+            height	: 400,
+            title	: '设置员工角色',
+            closed	: true,
+            modal	: true,
+            fullcontent : true
+        });
+
+        $('#staffdicset_frame_window').Dialog({
+            width	: 600,
+            height	: 400,
+            title	: '设置基础数据',
+            closed	: true,
+            modal	: true,
+            fullcontent : true
+        });
+        sui.init();
+
+    });
+
+    $("#btn-search").click(function () {
+        doSearch();
+    });
+
+    function doSearch() {
+        $('#tb-dbdatagrid').Table("reload", {
+            name:$('#search_name').val()
+        });
+    }
+
+    CALLBACK.callBackFn=function(data){
+        if(data.code){
+            message.info("提示", "操作成功", function () {
+                //关闭弹出窗
+                $("#staff_form_window").Dialog("close");
+                //重新加载数据
+                doSearch();
+            });
+        }else{
+            message.error("错误", data.message, function () {});
+        }
+    }
+
+    //新增
+    CALLBACK.doNew=function(){
+
+        //清除
+        $('#staff_form')[0].reset();
+        $('#id').val('');
+        $("#staff_form_window").Dialog("open");
+    };
+
+    //编辑
+    CALLBACK.doEdit=function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        if(rows.length==0){
+            message.warning("警告", "请选择记录", function () {});
+            return;
+        } else {
+            var id = rows[0].id;
+            var staffno = rows[0].staffno;
+            var name = rows[0].name;
+            var loginname = rows[0].loginname;
+            var mobilephone = rows[0].mobilephone;
+            var loginflag = rows[0].loginflag;
+
+            //初始化数据
+            $('#id').val(id);
+            $('#staffno').val(staffno);
+            $('#name').val(name);
+            $('#loginname').val(loginname);
+            $('#loginpwd').val('');
+            $('#mobilephone').val(mobilephone);
+            $("#loginflag").Combobox('setValue',loginflag);
+            $("#staff_form_window").Dialog("open");
+        }
+    };
+
+
+    CALLBACK.doEdit02=function(index, rowdata){
+        if(rowdata!= null){
+            var id = rowdata.id;
+            var staffno = rowdata.staffno;
+            var name = rowdata.name;
+            var loginname = rowdata.loginname;
+            var mobilephone = rowdata.mobilephone;
+            var loginflag = rowdata.loginflag;
+
+            //初始化数据
+            $('#id').val(id);
+            $('#staffno').val(staffno);
+            $('#name').val(name);
+            $('#loginname').val(loginname);
+            $('#loginpwd').val('');
+            $('#mobilephone').val(mobilephone);
+            $("#loginflag").Combobox('setValue',loginflag);
+            $("#staff_form_window").Dialog("open");
+        }
+    };
+
+
+
+    //删除
+    CALLBACK.doDel= function(){
+
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        var ids = [];
+        for(var index in rows){
+            ids.push(rows[index]['id']);
+        }
+
+        if( ids.length ) {
+            message.question("确认", "你确定要删除选中的数据？", function () {
+                var str = '';
+                for( i in ids ) {
+                    str += ids[i] + ((ids.length - 1) == i ?'':',');
+                }
+
+                $.ajax({
+                    type 		: "POST",
+                    dataType 	: "jsonp",
+                    url 		: uri_del_staff + "?jsonCallBack=?",
+                    data		: {'ids' : str},
+                    success		: function( result ) {
+                        if(result.code){
+                            message.info("提示", "删除成功",function(){
+                                //重新加载数据
+                                doSearch();
+                            });
+                        }else{
+                            message.error("错误", result.message, function () {});
+                        }
+                    }
+                });
+            });
+        } else {
+            message.warning("警告", "请选择记录", function () {});
+        }
+    };
+
+    //编辑
+    CALLBACK.doRoleset=function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        if(rows.length==0){
+            message.warning("警告", "请选择记录", function () {});
+            return;
+        } else {
+            var id = rows[0].id;
+
+
+
+            var params = $.param( { 'staffid' : id } );
+            var url = uri_staffroleset + '?' + params;
+            var $this_window = '#staffroleset_frame';
+            // 为iframe设置src
+            $('#staffroleset_frame').attr('src', url);
+
+            $("#staffroleset_frame_window").Dialog("open");
+        }
+    };
+
+    //字段格式化
+    CALLBACK.enableFormatter = function(index,val){
+        if(val=='1')
+            return '是';
+        return '否';
+    };
+  </script>
+
+</body>

@@ -1,0 +1,211 @@
+<#include "common/header-title.html" />
+
+<body>
+<div class="hlideal-tabnav-content">
+	<div class="search-bg">
+	    <form action="" class="sui-form">
+	        <dl class="form-item">
+	            <dt class="title">数据源code：</dt>
+	            <dd class="detail">
+	                <label>
+	                    <input type="text" class="sui-input" name="name"  id="search_key" />
+	                </label>
+	            </dd>
+	        </dl>
+            <dl class="form-item">
+                <dt class="title">数据源名称：</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" name="name"  id="search_value" />
+                    </label>
+                </dd>
+            </dl>
+	        <dl class="form-item">
+	            <dt class="title"></dt>
+	            <dd class="detail">
+	                <button type="button" class="hlideal-btn btn-blue" id="btn-search">搜索</button>
+                	<button type="reset" class="hlideal-btn btn-gray">重置</button>
+	            </dd>
+	        </dl>  
+	    </form>
+	</div>
+	<table id="tb-dbdatagrid" class="sui-datagrid table-list" zdata-options={"url":"${adminCtx}/backstage/sys/queryparamList.htm?jsonCallBack=?","fitColumns":true,"singleSelect":false,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":15,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list"}>
+        <thead>
+	    <tr>
+	        <th data-options="field:paramkey,width:300">参数key</th>
+	        <th data-options="field:paramvalue">参数值</th>
+            <th data-options="field:description,width:300">参数说明</th>
+	    </tr>
+	    </thead>
+	</table>
+	<div id="btn-applylist" >
+        <a class="sui-toolbar" id="btn-add"  text="增加" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doNew"></a>
+        <a class="sui-toolbar" id="btn-modify" text="修改" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doEdit"></a>
+        <a class="sui-toolbar" id="btn-del" text="删除" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doDel"></a>    
+    </div>
+</div>
+
+<div id="param_form_window" style="display: none;">
+	<div class="clearfix mt20">
+		<form id="param_form"  class="sui-form" method="post" enctype="multipart/form-data"  zdata-options={"url":"${adminCtx}/backstage/sys/paramSaveData.htm?jsonCallBack=?","callBack":"callBackFn"}>
+			<input type="hidden" name="id" id="id" value=""/>
+			<dl class="form-item">
+				<dt class="title sptitle">参数key:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="paramkey" name="paramkey" style="width:470px" />
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>
+			</br>
+            <dl class="form-item">
+                <dt class="title sptitle">参数值:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="paramvalue" name="paramvalue" style="width:470px" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+            </br>
+			<dl class="form-item">
+				<dt class="title sptitle">参数说明:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-area" id="description" name="description" />
+					</label>
+				</dd>
+			</dl>
+
+		</form>
+	</div>
+</div>
+
+<script>
+	var uri_delparam = '${adminCtx}/backstage/sys/paramDeleteData.htm';
+    $(function() {
+        $("#param_form_window").Dialog({
+            width: 650,
+            height: 400,
+            title: '数据源信息',
+            closed:true,
+            buttons:[{
+                id:'message-btn',
+                text:'确定',
+                buttonCls:'btn-blue',
+                handler:function(){
+                    $("#param_form").submit();
+                }
+            },{
+                id:'message-btn',
+                text:'取消',
+                buttonCls:'btn-gray',
+                handler:function(){
+                    $("#param_form_window").Dialog("close");
+                }
+            }]
+        });
+
+        sui.init();
+
+    });
+
+    $("#btn-search").click(function () {
+        doSearch();
+    });
+
+    function doSearch() {
+        $('#tb-dbdatagrid').Table("reload", {
+            paramkey:$('#search_key').val(),
+            paramvalue:$('#search_value').val()
+        });
+    }
+
+    CALLBACK.callBackFn=function(data){
+        if(data.code){
+            message.info("提示", "操作成功", function () {
+                //关闭弹出窗
+                $("#param_form_window").Dialog("close");
+                //重新加载数据
+                doSearch();
+            });
+        }else{
+            message.error("错误", data.msg, function () {
+
+            });
+        }
+    }
+
+    //新增
+    CALLBACK.doNew=function(){
+
+        //清除
+        $('#param_form')[0].reset();
+        $('#id').val('');
+        $("#param_form_window").Dialog("open");
+    };
+
+    //编辑
+    CALLBACK.doEdit=function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        if(rows.length==0){
+            message.warning("警告", "请选择记录", function () {});
+            return;
+        } else {
+            var formData = rows[0];
+
+            var id = formData.id;
+
+            //初始化数据
+            $('#id').val(id);
+            $('#paramkey').val(formData.paramkey);
+            $('#paramvalue').val(formData.paramvalue);
+            $('#description').val(formData.description);
+            $("#param_form_window").Dialog("open");
+        }
+    };
+
+    //删除
+    CALLBACK.doDel= function(){
+
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        var ids = [];
+        for(var index in rows){
+            ids.push(rows[index]['id']);
+        }
+
+        if( ids.length ) {
+            message.question("确认", "你确定要删除选中的数据？", function () {
+                var str = '';
+                for( i in ids ) {
+                    str += ids[i] + ((ids.length - 1) == i ?'':',');
+                }
+
+                $.ajax({
+                    type 		: "POST",
+                    dataType 	: "jsonp",
+                    url 		: uri_delparam + "?jsonCallBack=?",
+                    data		: {'ids' : str},
+                    success		: function( result ) {
+                        if(result.code){
+                            message.info("提示", "删除成功",function(){
+                                //重新加载数据
+                                doSearch();
+                            });
+                        }else{
+                            message.error("错误", result.message, function () {});
+                        }
+                    }
+                });
+            });
+        } else {
+            message.warning("警告", "请选择记录", function () {
+
+            });
+        }
+    };
+
+</script>
+
+</body>

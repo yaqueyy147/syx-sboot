@@ -1,0 +1,85 @@
+@charset "utf-8";
+/* CSS Document */
+body{background:#d7dae0;}
+
+.manageBox{	position:relative;margin-left:20px;background-color:#ffffff;}
+.deptManageBox{	width: 30%;	margin-right: 20px;	float: left;}
+.deptUserBox{overflow: hidden;margin-right: 20px;}
+
+.deptManageBox .settingHead,.deptUserBox .settingHead{width:100%;height:60px;background:#f0f0f4;color:#666666;}
+
+.settingHead p{	display: inline-block;margin-left:20px;line-height:38px;padding-top:10px;font-size:16px;float: left;}
+
+.settingHead .searchGroup{float: right;	position: relative;	margin-top: 15px;margin-right: 20px;}
+
+.settingHead input{	width:180px;height:20px;border-radius: 5px;	padding:5px 25px 5px 5px;border:solid 1px #999999;float: left;}
+
+.settingBody{width:100%;position: absolute;top: 60px;bottom: 0px;overflow:auto;	background-color: #ffffff;}
+
+.sysAddBtn{width:100px;height: 30px;border-radius: 5px;position: relative;text-align: left;	padding-left: 5px;color: #dbdbdb;}
+.sysAddBtn .searchIconSys{position: absolute;width: 12px;height: 12px;margin: 3px 0 0 18px;}
+.settingBody table{font-size: 14px;	margin-bottom: 0 !important;}
+.settingBody table a.moreInfo{display: inline-block;width: 18px;height: 17px;}
+
+.settingBody table a.deleteInfo,#deptTree a.diyDelete{display: inline-block;width: 18px;height: 17px;margin-top: -6px;}
+
+.settingBody table a.editInfo,#deptTree a.diyEdit{display: inline-block;width: 18px;height: 17px;margin-top: -6px;}
+
+.settingBody table tr td:last-child,.settingBody table tr td:nth-child(2),.settingBody table tr td:nth-child(3){text-align: center;}
+.settingBody table tr{	height:30px;}
+
+.settingBody table thead tr td{	font-size: 16px;font-weight: bold;}
+
+.settingBody table tr td{padding:5px;border-top-color: #f0f0f4;vertical-align: middle;}
+.settingBody table tr td:first-child{padding-left: 20px !important;}
+.settingBody table tr td:last-child{text-align: right !important;padding-right: 20px !important;}
+
+.settingBody table tr:last-child{border-bottom: solid 1px #f0f0f4;}
+
+.settingBody table.tree tr,.settingBody table.tree tr td{border:none !important;}
+
+.pageNav{background:#ffffff !important;margin-left:20px;min-height:46px;height:46px;border-top:solid 4px #424982;}
+
+.form-group{color: #666666 !important;}
+
+.form-group .form-control {	width: 400px !important;height: 30px !important;border-color: #999999 !important;padding:5px !important;}
+
+.form-group select.form-control {appearance:none;-moz-appearance:none;-webkit-appearance:none;background-position:380px;padding-right:25px;}
+.form-group select.form-control :hover{	background-position:380px;padding-right:25px;}
+
+.form-group .limitsContent p{margin:0 !important;}
+
+.limitContent1{padding-left: 20px;width:500px;height:85px;border:dashed 1px #999999;}
+.limitContent2{	padding-left: 20px;	width:500px;height:30px;border:dashed 1px #999999;}
+.limitContent3{padding-left: 20px;width:500px;height:115px;border:dashed 1px #999999;}
+
+.limitContent4{	padding-left: 20px;width:500px;	height:55px;border:dashed 1px #999999;}
+
+.form-group .limitsContent .limitContent p{	margin-top: 2px !important;}
+.form-group .limitsContent .limitContent p label{display: inline-block;}
+
+.form-group .limitsContent .limitContent p label:nth-child(2){	margin-left:60px;}
+
+.form-group .limitsContent .limitContent1 p label:nth-child(2){	margin-left:72px !important;}
+.form-group .limitsContent .limitContent3 p label:nth-child(2){	 margin-left:85px !important; }
+.form-group .limitsContent .pp1{margin-top:5px !important;}
+
+.restPwdBtn{background-color: #ee5d64;color: #ffffff;height: 30px;width:60px;font-size: 12px;padding:6px 5px;}
+
+.pwdPP label{display: block;}
+
+.pwdpp input{display: inline;}
+
+.pwdPP .pwdCC{display: inline;}
+
+.pwdPP .restPwdBtn{	margin-left: 10px;	margin-right: 10px;}
+
+.flexContent{cursor: pointer;}
+
+#deptTree{	margin-left: 20px;}
+
+#deptTree div.diyBtn{position: absolute;right:10px;	display: inline-block;}
+
+#deptTree div.diyBtn a{	margin-left: 0 !important;}
+
+#userlist li{	height:30px;	border: solid 1px #999999;}

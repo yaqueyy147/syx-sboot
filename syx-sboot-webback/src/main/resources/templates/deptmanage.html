@@ -1,0 +1,486 @@
+<#include "common/header-title.html" />
+<link rel="stylesheet" href="${adminCtxStatics}/js/ztree/css/zTreeStyle/zTreeStyle.css"/>
+<link rel="stylesheet" href="${adminCtxStatics}/css/deptSetting.css"/>
+
+
+<body>
+<div class="hlideal-tabnav-content">
+    <div class="deptManageBox manageBox">
+        <div class="settingHead">
+            <p>部门管理</p>
+            <div class="searchGroup">
+                <input id="deptNameForSearch" name="deptName" type="text" placeholder="部门名称" />
+                <button type="button" class="hlideal-btn btn-blue" id="btn-search-dept">搜索</button>
+            </div>
+        </div>
+        <div class="settingBody">
+            <table class="table" style="width: 100%">
+                <thead>
+                <tr>
+                    <td>
+                        <button id="adddept" class="mr10 mb15 btn-operateblue"><i class="icon-blue06"></i>新增部门</button>
+                    </td>
+                    <td>操作</td>
+                </tr>
+                </thead>
+            </table>
+            <div class="ztree deptTree" id="deptTree">
+
+            </div>
+        </div>
+    </div>
+    <div id="deptUserBox" class="deptUserBox manageBox">
+        <div class="settingHead">
+            <p>部门用户管理</p>
+            <div class="searchGroup">
+                <input type="hidden" id="deptid4user" name="deptid4user" />
+                <input type="hidden" id="deptname4user" name="deptname4user" />
+                <input id="deptuserForSearch" name="deptuser" type="text" placeholder="用户名" />
+                <button type="button" class="hlideal-btn btn-blue" id="btn-search-deptuser">搜索</button>
+            </div>
+        </div>
+        <div class="settingBody" id="deptuserDiv">
+            <table id="tb-dbdatagrid" class="sui-datagrid table-list" zdata-options={"url":"${adminCtx}/backstage/sys/queryStaffList.htm?jsonCallBack=?","fitColumns":true,"singleSelect":false,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":15,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list","startInit":false}>
+                <thead>
+                <tr>
+                    <th data-options="field:name">用户名</th>
+                    <th data-options="field:loginname">用户登录名</th>
+                </tr>
+                </thead>
+            </table>
+            <div id="btn-applylist" >
+                <a class="sui-toolbar" id="btn-add"  text="部门用户设置" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doNew"></a>
+##                <a class="sui-toolbar" id="btn-del" text="删除" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doDel"></a>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="dept-window" style="display: none">
+    <div class="clearfix mt20">
+        <form id="dept_form"  class="sui-form" method="post" enctype="multipart/form-data"  zdata-options={"url":"${adminCtx}/backstage/sys/deptSaveData.htm?jsonCallBack=?","callBack":"callBackFn"}>
+            <input type="hidden" name="id" id="deptid" value=""/>
+            <dl class="form-item">
+                <dt class="title sptitle">部门编号:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="deptno" name="deptno" />
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">部门名称:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="deptname" name="deptname" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+
+            <dl class="form-item">
+                <dt class="title sptitle">上级单位:</dt>
+                <dd class="detail">
+                    <label>
+                        <select id="parentid" name="parentid" class="sui-input">
+
+                        </select>
+                    </label>
+                </dd>
+            </dl>
+        </form>
+    </div>
+</div>
+
+<div id="deptuser-window" style="display: none">
+
+    <ul id="userList">
+
+    </ul>
+</div>
+<script type="text/javascript" src="${adminCtxStatics}/js/ztree/js/jquery.ztree.all-3.5.js"></script>
+<script type="text/javascript">
+    var uri_del_dept = '${adminCtx}/backstage/sys/deptDeleteData.htm';
+    var uri_dept_list = '${adminCtx}/backstage/sys/queryDeptList.htm';
+    var uri_dept_save = '${adminCtx}/backstage/sys/deptSaveData.htm';
+    var uri_user_list02 = '${adminCtx}/backstage/sys/queryStaffList02.htm';
+    var uri_deptuser_set = '${adminCtx}/backstage/sys/setUserDept.htm';
+    var uri_deptuser_del = '${adminCtx}/backstage/sys/deptUserDel.htm';
+    var deptTreeSetting;
+    var deptTree;
+    var winHeight = $(window).height();
+    $(function() {
+
+        $(".manageBox").attr("style","height:" + (winHeight - 20) + "px");
+
+        $("#dept-window").Dialog({
+            width: 700,
+            height: 400,
+            title: '部门信息',
+            closed:true,
+            buttons:[{
+                id:'message-btn',
+                text:'确定',
+                buttonCls:'btn-blue',
+                handler:function(){
+
+//                    var deptdata = formDataToJson($("#dept_form"));
+//                    $.ajax({
+//                        type: "POST",
+//                        dataType: "jsonp",
+//                        url: uri_dept_save + "?jsonCallBack=?",//要访问的后台地址
+//                        data: deptdata,
+//                        success: function (data) {
+//                            message.info("提示", "操作成功", function () {
+//                                //关闭弹出窗
+//                                $("#dept-window").Dialog("close");
+//                                var param = {deptname:$("#deptNameForSearch").val()};
+//                                deptTree = initDeptTree(deptTreeSetting,param);
+//                            });
+//
+//                        },
+//                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+//                            message.warning("提示", "网络请求出错,请联系管理员");
+//                        }
+//                    });
+                    $("#dept_form").submit();
+                }
+            },{
+                id:'message-btn',
+                text:'取消',
+                buttonCls:'btn-gray',
+                handler:function(){
+                    $("#dept-window").Dialog("close");
+                }
+            }]
+        });
+
+        $("#deptuser-window").Dialog({
+            width: 500,
+            height: 450,
+            title: '部门添加用户',
+            closed:true,
+            buttons:[{
+                id:'message-btn',
+                text:'确定添加',
+                buttonCls:'btn-blue',
+                handler:function(){
+                    var chks = $("input[name='userchk']:checked");
+                    var deptid = $("#deptid4user").val();
+                    var deptname = $("#deptname4user").val();
+                    var chkids = "";
+                    $(chks).each(function () {
+                        chkids += ",'" + $(this).val() + "'";
+                    });
+                    chkids = chkids.substring(1);
+                    $.ajax({
+                        type: "POST",
+                        dataType: "jsonp",
+                        url: uri_deptuser_set + "?jsonCallBack=?",//要访问的后台地址
+                        data: {deptid:deptid,ids:chkids,deptname:deptname},
+                        success: function (data) {
+                            if(data.code >= 1){
+                                message.info("提示", "操作成功", function () {
+                                    //关闭弹出窗
+                                    $('#tb-dbdatagrid').Table("reload", {
+                                        name:$('#deptuserForSearch').val(),
+                                        deptid:$("#deptid4user").val()
+                                    });
+                                    $("#deptuser-window").Dialog("close");
+                                    $(chks).each(function () {
+                                        $(this).attr("data-deptid",deptid);
+                                    });
+
+                                });
+                            }else{
+                                message.info("提示", "网络请求出错,请联系管理员", function () {});
+                            }
+
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            message.warning("提示", "网络请求出错,请联系管理员");
+                        }
+                    });
+
+                }
+            },{
+                id:'message-btn',
+                text:'取消',
+                buttonCls:'btn-gray',
+                handler:function(){
+                    $("#deptuser-window").Dialog("close");
+                }
+            }]
+        });
+
+        deptTreeSetting = {
+            data: {
+                simpleData: {
+                    enable: true
+                }
+            },
+            view:{
+                showIcon: false,
+                addDiyDom: addDiyDom
+            },
+            callback:{
+                onClick:zTreeOnClick
+            }
+        };
+
+        //初始化部门树
+        var param = {deptname:$("#deptNameForSearch").val()};
+        deptTree = initDeptTree(deptTreeSetting,param);
+
+        //初始化部门用户列表
+        sui.init();
+
+        //新增部门
+        $("#adddept").click(function () {
+            var deptTree = $.fn.zTree.getZTreeObj("deptTree");
+            var nodes = deptTree.getNodes();
+            var nodesArry = deptTree.transformToArray(nodes);
+            var deptHtml = "<option value='0'>无</option>";
+            for(var i=0;i<nodesArry.length;i++){
+                var ii = nodesArry[i];
+                deptHtml += "<option value='" + ii.id + "'>" + ii.name + "</option>";
+            }
+            $("#dept_form")[0].reset();
+            $("#deptid").val('');
+            $("#parentid").html(deptHtml);
+            $("#dept-window").Dialog("open");
+        });
+
+        //初始化用户列表
+        initUserList();
+    });
+
+    $("#btn-search-dept").click(function () {
+        doSearchDept();
+    });
+
+    function doSearchDept() {
+        var param = {deptname:$("#deptNameForSearch").val()};
+        deptTree = initDeptTree(deptTreeSetting,param);
+    }
+
+    $("#btn-search-deptuser").click(function () {
+        doSearch();
+    });
+
+    function doSearch() {
+        $('#tb-dbdatagrid').Table("reload", {
+            name:$('#deptuserForSearch').val(),
+            deptid:$("#deptid4user").val()
+        });
+    }
+
+    CALLBACK.callBackFn=function(data){
+        if(data.code){
+            message.info("提示", "操作成功", function () {
+                //关闭弹出窗
+                $("#dept-window").Dialog("close");
+                //重新加载数据
+                var param = {deptname:$("#deptNameForSearch").val()};
+                deptTree = initDeptTree(deptTreeSetting,param);
+            });
+        }else{
+            message.error("错误", data.message, function () {});
+        }
+    }
+
+
+    //设置ztree
+    function initDeptTree(setting,queryParam) {
+        var treeObj;
+        $.ajax({
+            async:false,
+            type: "POST",
+            dataType: "jsonp",
+            url: uri_dept_list + "?jsonCallBack=?",//要访问的后台地址
+            data: queryParam,
+            success: function (data) {
+                var zNodes = data.treeData;
+                treeObj = $.fn.zTree.init($("#deptTree"),setting,zNodes);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                message.warning("提示", "网络请求出错,请联系管理员");
+            }
+        });
+
+        return treeObj;
+    }
+
+    //机构树自定义操作
+    function addDiyDom(treeId, treeNode) {
+        var aObj = $("#" + treeNode.tId + "_a");
+        if ($("#diyBtn_"+treeNode.id).length>0) return;
+
+
+        var editStr = "<span id='diyBtn_space_" +treeNode.id+ "' > </span>";
+        editStr += "<div class='diyBtn'>";
+        editStr += "<a href='javascript:void 0' class='diyEdit' id='diyBtn_" + treeNode.id + "'>编辑</a>";
+        editStr += "<a href='javascript:void 0' class='diyDelete' id='diyBtn_" + treeNode.id + "'>删除</a>";
+        editStr += "</div>";
+
+        aObj.append(editStr);
+
+        //编辑机构
+        var btnEdit = $("#diyBtn_"+treeNode.id + ".diyEdit");
+        if (btnEdit) btnEdit.bind("click", function(){
+            $("#dic_addOrgan_window").Dialog("open");
+
+            //初始化上级单位
+            var deptTree = $.fn.zTree.getZTreeObj("deptTree");
+            var nodes = deptTree.getNodes();
+            var nodesArry = deptTree.transformToArray(nodes);
+            var deptS = "<option value='0'>无</option>";
+            if(nodesArry.length > 0){
+                for(var i=0;i<nodesArry.length;i++){
+                    var ii = nodesArry[i];
+                    deptS += "<option value='" + ii.id + "'>" + ii.name + "</option>";
+                }
+
+            }
+            $("#parentid").html(deptS);
+            $("#deptid").val(treeNode.id);
+            $("#deptname").val(treeNode.name);
+            $("#parentid").val(treeNode.pId);
+            $("#deptno").val(treeNode.text);
+            $("#dept-window").Dialog("open");
+        });
+
+        //删除机构
+        var btnDelete = $("#diyBtn_"+treeNode.id + ".diyDelete");
+        if (btnDelete) btnDelete.bind("click", function(){
+            message.question("确认", "你确定要删除选中的机构(" + treeNode.name + ")？", function (e) {
+                $.ajax({
+                    type 		: "POST",
+                    dataType 	: "jsonp",
+                    url 		: uri_del_dept + "?jsonCallBack=?",
+                    data		: {ids : treeNode.id},
+                    success		: function( result ) {
+                        if(result.code){
+                            message.success("提示", "删除成功",function(){
+                                //重新加载数据
+                                var param = {deptname:$("#deptNameForSearch").val()};
+                                initDeptTree(deptTreeSetting,param);
+                            });
+                        }else{
+                            message.error("错误", result.message, function () {});
+                        }
+                    }
+                });
+            });
+
+        });
+    }
+
+    //单击刷新用户
+    function zTreeOnClick(event, treeId, treeNode){
+        var deptid = treeNode.id;
+
+        $("#deptid4user").val(deptid);
+        $("#deptname4user").val(treeNode.name);
+        $("#deptUserBox p").text(treeNode.name + "用户管理");
+        $('#tb-dbdatagrid').Table("reload", {
+            deptid:deptid
+        });
+    }
+
+    function initUserList(){
+        $.ajax({
+            type: "POST",
+            dataType: "jsonp",
+            url: uri_user_list02 + "?jsonCallBack=?",//要访问的后台地址
+            data:{pageNo:'0',pageSize:'0',repage:null},
+            success: function (data) {
+                var userList = data.userList;
+                var userhtml = "";
+                for(var i=0;i<userList.length;i++){
+                    var ii = userList[i];
+                    userhtml += "<li>";
+                    userhtml += "<label><input type='checkbox' name='userchk' class='form-checkbox' value='" + ii.id + "' data-deptid='" + ii.deptid + "' />&nbsp;";
+                    userhtml += ii.loginname + "(" + ii.name + ")</label>";
+                    userhtml += "</li>";
+                }
+                $("#userList").html(userhtml);
+
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                message.warning("提示", "网络请求出错,请联系管理员");
+            }
+        });
+    }
+
+    //新增
+    CALLBACK.doNew=function(){
+
+        var selectdeptid = $("#deptid4user").val();
+        if($.trim(selectdeptid).length <= 0){
+            message.info("提示", "请先选择一个部门", function () {});
+            return;
+        }
+
+        var chks = $("input[name='userchk']");
+        for(var i=0;i<chks.length;i++){
+            var ii = chks[i];
+            var deptid01 = $(ii).attr("data-deptid");
+            if(selectdeptid == deptid01){
+                $(ii).prop("checked",true);
+            }else{
+                $(ii).prop("checked",false);
+            }
+        }
+
+        $("#deptuser-window").Dialog("open");
+    };
+
+    //删除
+    CALLBACK.doDel= function(){
+
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        var ids = [];
+        for(var index in rows){
+            ids.push(rows[index]['id']);
+        }
+
+        if( ids.length ) {
+            message.question("确认", "你确定要选中的用户移除该部门吗？", function () {
+                var str = '';
+                for( i in ids ) {
+                    str += "'" + ids[i] + "'" + ((ids.length - 1) == i ?'':',');
+                }
+
+                $.ajax({
+                    type 		: "POST",
+                    dataType 	: "jsonp",
+                    url 		: uri_deptuser_del + "?jsonCallBack=?",
+                    data		: {'ids' : str},
+                    success		: function( result ) {
+                        if(result.code){
+                            message.info("提示", "移除成功",function(){
+                                //重新加载数据
+                                doSearch();
+                            });
+                        }else{
+                            message.error("错误", result.message, function () {});
+                        }
+                    }
+                });
+            });
+        } else {
+            message.warning("警告", "请选择记录", function () {
+
+            });
+        }
+    };
+
+    //字段格式化
+    CALLBACK.enableFormatter = function(index,val){
+        if(val=='1')
+            return '是';
+        return '否';
+    };
+</script>
+</body>

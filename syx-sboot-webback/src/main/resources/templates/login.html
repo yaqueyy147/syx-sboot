@@ -1,0 +1,62 @@
+<#include "common/header-title.html" />
+<link rel="stylesheet" href="${adminCtxStatics}/css/login.css">
+
+<script type="text/javascript" src="${adminCtxStatics}/js/validate/jquery.validate.js"></script>
+<script type="text/javascript" src="${adminCtxStatics}/js/validate/additional-methods.js"></script>
+<script type="text/javascript" src="${adminCtxStatics}/js/validate/messages_zh.js"></script>
+<script type="text/javascript" src="${adminCtxStatics}/js/validate/validate.js"></script>
+<script type="text/javascript" src="${adminCtxStatics}/js/login.js"></script>
+<script type="text/javascript">
+	 if(window != top){
+		top.location.href = location.href;
+	}
+</script>
+<body>
+	<meta name="base_url" content="${ctx}" id="project_base_url">
+	<div class="loginBodyBg">
+        <div class="hlideal-login-con">
+            <h1><img src="../statics/admin/images/login/login-logo.png" >后台管理系统</h1>
+            <input type="hidden" id="message" name="message" value="${message!}"/>
+            <div class="rel mt10">
+                <form class="user-common-form" id="loginform" method="post" action="${adminCtx}/logincheck.htm">
+                    <div class="login-detail">
+                            <div class="login-dl-dd">
+                                <i></i>
+                                <input type="text" class="inputfocus login-input" name="userName" id="userName" placeholder="用户名" value="">
+                                <span class="login-error validate-msg"></span>
+                            </div>
+
+                            <div class="login-dl-dd password">
+                                <i></i>
+                                <input type="password"  class="inputfocus login-input" id="password" name="password" placeholder="密码" value="">
+                                <span class="login-error validate-msg"></span>
+                            </div>
+
+                        <div class="login-submit">
+                            <div class="login-dl-dd">
+                                <button type="button" id="submitbtn" class="login-botton"><span>登录</span></button>
+                            </div>
+                        </div>
+                        <div class="login-a validate-msg" style="display: none;">
+                            <div class="login-error">
+                                <i></i><span id="zds-error-msg"></span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+        <p>推荐使用<a href="">chrome浏览器</a> ,firefox浏览器浏览页面</p>
+	</div>
+
+	
+
+	<script type="text/javascript">
+        var baseUrl = "${adminCtx}";
+		 var message = $("#message").val();
+		 if(message!= null && message != '') {
+		 	alert(message);
+		 }
+	</script>
+</body>

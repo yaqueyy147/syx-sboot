@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<#include "common/header-title.html" />
+<html lang="en">
+<head>
+    <base id="ctx" href="${ctx}">
+    <meta charset="UTF-8">
+    <title>这是test</title>
+    <link rel="stylesheet" href="${ctxStatics}/admin/css/style.css" type="text/css" />
+</head>
+<body>
+<img src="${ctxStatics}/admin/images/logo.png" />
+Hello World!
+<br/>
+${test}
+<br/>
+<#list ll3 as ss>
+    ${ss.id!}-->${ss.loginname!} --> ${ss.name!}
+    <br/>
+</#list>
+<br/>
+<div id="testdialog" style="display: none">
+    <div class="clearfix mt20">
+        测试测试
+    </div>
+</div>
+<br/>
+<button class="btn btn-blue" id="tt">测试按钮</button>
+<br/>
+<table id="tb-dbdatagrid" class="yui-datagrid table-list" zdata-options={"url":"${ctx}/sboot/query?jsonCallBack=?","fitColumns":true,"singleSelect":false,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":5,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list"}>
+    <thead>
+    <tr>
+        <th data-options="field:loginname">登录名</th>
+        <th data-options="field:name">用户名</th>
+        <th data-options="field:createdate">创建时间</th>
+    </tr>
+    </thead>
+</table>
+<div id="btn-applylist" >
+    <a class="yui-toolbar" id="btn-add"  text="测试按钮1" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="dotest"></a>
+</div>
+
+
+
+
+<script>
+$(function () {
+    $("#testdialog").Dialog({
+        width: 600,
+        height: 200,
+        title: '测试dialog',
+        closed:true,
+        buttons:[{
+            id:'message-btn',
+            text:'确定',
+            buttonCls:'btn-blue',
+            handler:function(){
+                message.info("提示","测试成功",function () {});
+                $("#testdialog").Dialog("close");
+            }
+        },{
+            id:'message-btn',
+            text:'取消',
+            buttonCls:'btn-gray',
+            handler:function(){
+                $("#testdialog").Dialog("close");
+            }
+        }]
+    });
+
+    $("#tt").click(function () {
+        $.ajax({
+            type 		: "POST",
+            dataType 	: "jsonp",
+            url 		: "${ctx}/sboot/testupdate?jsonCallBack=?",
+            data		: {'id' : "005918d55765483981ec9aa239164866","name":"肖强01"},
+            success		: function( result ) {
+                if(result.code){
+                    message.info("提示", result.message,function(){
+                        //重新加载数据
+                        $("#tb-dbdatagrid").Table("reload");
+                    });
+                }else{
+                    message.error("错误", result.message, function () {});
+                }
+            }
+        });
+
+    });
+    $("#tb-dbdatagrid").Table("init");
+//    table.init("");
+
+    CallBack.dotest = function () {
+        alert("tttt");
+    }
+});
+</script>
+</body>
+</html>

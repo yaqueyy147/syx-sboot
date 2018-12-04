@@ -1,0 +1,333 @@
+<#include "common/header-title.html" />
+
+<body>
+<div class="hlideal-tabnav-content">
+	<div class="search-bg">
+	    <form action="" class="sui-form">
+	        <dl class="form-item">
+	            <dt class="title">数据源code：</dt>
+	            <dd class="detail">
+	                <label>
+	                    <input type="text" class="sui-input" name="name"  id="search_code" />
+	                </label>
+	            </dd>
+	        </dl>
+            <dl class="form-item">
+                <dt class="title">数据源名称：</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" name="name"  id="search_name" />
+                    </label>
+                </dd>
+            </dl>
+	        <dl class="form-item">
+	            <dt class="title"></dt>
+	            <dd class="detail">
+	                <button type="button" class="hlideal-btn btn-blue" id="btn-search">搜索</button>
+                	<button type="reset" class="hlideal-btn btn-gray">重置</button>
+	            </dd>
+	        </dl>  
+	    </form>
+	</div>
+	<table id="tb-dbdatagrid" class="sui-datagrid table-list" zdata-options={"url":"${adminCtx}/backstage/sys/querydatasourceList.htm?jsonCallBack=?","fitColumns":true,"singleSelect":false,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":15,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list"}>
+        <thead>
+	    <tr>
+	        <th data-options="field:dscode">数据源编码</th>
+	        <th data-options="field:dsname">数据源名称</th>
+            <th data-options="field:dsdriver">数据源驱动</th>
+            <th data-options="field:dsusername">连接用户</th>
+            <th data-options="field:dsmaxactive">最大活动数</th>
+            <th data-options="field:dsmaxidle">最大空闲数</th>
+            <th data-options="field:dswaittime">等待时间</th>
+            <th data-options="field:datavalid">启用状态</th>
+            <th data-options="field:createname">创建人</th>
+            <th data-options="field:createdate">创建时间</th>
+	    </tr>
+	    </thead>
+	</table>
+	<div id="btn-applylist" >
+        <a class="sui-toolbar" id="btn-add"  text="增加" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doNew"></a>
+        <a class="sui-toolbar" id="btn-modify" text="修改" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doEdit"></a>
+        <a class="sui-toolbar" id="btn-del" text="删除" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doDel"></a>
+    </div>
+</div>
+
+
+
+<div id="datasource_form_window" style="display: none;">
+	<div class="clearfix mt20">
+		<form id="datasource_form"  class="sui-form" method="post" enctype="multipart/form-data"  zdata-options={"url":"${adminCtx}/backstage/sys/datasourceSaveData.htm?jsonCallBack=?","callBack":"callBackFn"}>
+			<input type="hidden" name="id" id="id" value=""/>
+			<dl class="form-item">
+				<dt class="title sptitle">数据源编码:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="dscode" name="dscode" />
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+				<dt class="title sptitle">数据源名称:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="dsname" name="dsname" />
+                        <i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>
+            <dl class="form-item">
+                <dt class="title sptitle">数据源驱动:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox" style="width:470px;"  validate-type="Require" id="dsdriver" name="dsdriver" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+			
+            <dl class="form-item">
+                <dt class="title sptitle">数据源URL:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox"  style="width:470px;"  validate-type="Require" id="dsurl" name="dsurl" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+            <dl class="form-item">
+                <dt class="title sptitle">连接用户:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="dsusername" name="dsusername" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">连接密码:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="dspassword" name="dspassword" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">最大活动数:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="dsmaxactive" name="dsmaxactive" value="10" />
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">最大空闲数:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="dsmaxidle" name="dsmaxidle" value="5" />
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">逐出时间:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="dscheckouttime" name="dscheckouttime" value="20000" />
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">等待时间:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="dswaittime" name="dswaittime" value="20000" />
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">启用Ping:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="hidden" validate-type="Require" id="dspingenabled" name="dspingenabled" 
+			            	data-data="[{'id':'1','text':'是'},{'id':'0','text':'否'}]"
+							data-valuefield="id" data-textfield="text" data-defaultvalue="1" class="sui-combobox sui-validatebox" style="width:70px">
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">Ping语句:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="dspingquery" name="dspingquery" value="SELECT 1" />
+                        <i class="require icon-mrequire"></i>
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">Ping间隔:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="dspingtime" name="dspingtime" value="0" />
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">启用状态:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="hidden" validate-type="Require" id="datavalid" name="datavalid" 
+			            	data-data="[{'id':'1','text':'是'},{'id':'0','text':'否'}]"
+							data-valuefield="id" data-textfield="text" data-defaultvalue="1" class="sui-combobox sui-validatebox">
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">备注信息:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="dsremark" name="dsremark" style="width:470px;" />
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+            
+		</form>
+	</div>
+</div>
+
+<script>
+	var uri_deldatasource = '${adminCtx}/backstage/sys/datasourceDeleteData.htm';
+    $(function() {
+        $("#datasource_form_window").Dialog({
+            width: 800,
+            height: 650,
+            title: '数据源信息',
+            closed:true,
+            buttons:[{
+                id:'message-btn',
+                text:'确定',
+                buttonCls:'btn-blue',
+                handler:function(){
+                    $("#datasource_form").submit();
+                }
+            },{
+                id:'message-btn',
+                text:'取消',
+                buttonCls:'btn-gray',
+                handler:function(){
+                    $("#datasource_form_window").Dialog("close");
+                }
+            }]
+        });
+
+        $("#tb-dbdatagrid").Table("init");
+        sui.init();
+    });
+
+    $("#btn-search").click(function () {
+        doSearch();
+    });
+
+    function doSearch() {
+        $('#tb-dbdatagrid').Table("reload", {
+            dsname:$('#search_name').val(),
+            dscode:$('#search_code').val()
+        });
+    }
+
+    CALLBACK.callBackFn=function(data){
+        if(data.code){
+            message.info("提示", "操作成功", function () {
+                //关闭弹出窗
+                $("#datasource_form_window").Dialog("close");
+                //重新加载数据
+                doSearch();
+            });
+        }else{
+            message.error("错误", data.message, function () {});
+        }
+    }
+
+    //新增
+    CALLBACK.doNew=function(){
+        //清除
+        $('#datasource_form')[0].reset();
+        $('#id').val('');
+        $("#datasource_form_window").Dialog("open");
+    };
+
+    //编辑
+    CALLBACK.doEdit=function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        if(rows.length==0){
+            message.warning("警告", "请选择记录", function () {});
+            return;
+        } else {
+            var formData = rows[0];
+
+            var id = formData.id;
+
+            //初始化数据
+            $('#id').val(id);
+            $('#dscode').val(formData.dscode);
+            $('#dsdriver').val(formData.dsdriver);
+            $('#dsname').val(formData.dsname);
+            $('#dsurl').val(formData.dsurl);
+            $('#dsusername').val(formData.dsusername);
+            $('#dspassword').val(formData.dspassword);
+            $('#dsmaxactive').val(formData.dsmaxactive);
+            $('#dsmaxidle').val(formData.dsmaxidle);
+            $('#dscheckouttime').val(formData.dscheckouttime);
+            $('#dswaittime').val(formData.dswaittime);
+            $('#dspingenabled').val(formData.dspingenabled);
+            $('#dspingquery').val(formData.dspingquery);
+            $('#dspingtime').val(formData.dspingtime);
+            $('#dsasorg').val(formData.dsasorg);
+            $('#dsremark').val(formData.dsremark);
+            $('#dataversion').val(formData.dataversion);
+            $('#datavalid').val(formData.datavalid);
+            $("#datasource_form_window").Dialog("open");
+        }
+    };
+
+    //删除
+    CALLBACK.doDel= function(){
+
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        var ids = [];
+        for(var index in rows){
+            ids.push(rows[index]['id']);
+        }
+
+        if( ids.length ) {
+            message.question("确认", "你确定要删除选中的数据？", function () {
+                var str = '';
+                for( i in ids ) {
+                    str += ids[i] + ((ids.length - 1) == i ?'':',');
+                }
+
+                $.ajax({
+                    type 		: "POST",
+                    dataType 	: "jsonp",
+                    url 		: uri_deldatasource + "?jsonCallBack=?",
+                    data		: {'ids' : str},
+                    success		: function( result ) {
+                        if(result.code){
+                            message.info("提示", "删除成功",function(){
+                                //重新加载数据
+                                doSearch();
+                            });
+                        }else{
+                            message.error("错误", result.message, function () {});
+                        }
+                    }
+                });
+            });
+        } else {
+            message.warning("警告", "请选择记录", function () {});
+        }
+    };
+  </script>
+
+</body>

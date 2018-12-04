@@ -1,0 +1,300 @@
+<#include "common/header-title.html" />
+
+<body>
+<div class="hlideal-tabnav-content">
+	<div class="search-bg">
+	    <form action="" class="sui-form">
+	        <dl class="form-item">
+	            <dt class="title">账号名：</dt>
+	            <dd class="detail">
+	                <label>
+	                    <input type="text" class="sui-input" name="servername"  id="search_servername" />
+	                </label>
+	            </dd>
+	        </dl>
+	        <dl class="form-item">
+	            <dt class="title"></dt>
+	            <dd class="detail">
+	                <button type="button" class="hlideal-btn btn-blue" id="btn-search">搜索</button>
+                	<button type="reset" class="hlideal-btn btn-gray">重置</button>
+	            </dd>
+	        </dl>  
+	    </form>
+	</div>
+	<table id="tb-dbdatagrid" class="sui-datagrid table-list" zdata-options={"url":"${adminCtx}/backstage/sys/queryqzstoresetList.htm?jsonCallBack=?","fitColumns":true,"singleSelect":false,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":10,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list"}>
+        <thead>
+	    <tr>
+	        <th data-options="field:servername,width:300">存储名称</th>
+            <th data-options="field:servertype,width:200" formatter="formartservertype">存储方式</th>
+            <th data-options="field:useflag,width:150" formatter="formartuseflag">是否启用</th>   
+            <th data-options="field:usetype,width:150" formatter="formartusetype">用途</th>            
+            <th data-options="field:createname,width:200">创建人</th>
+            <th data-options="field:createdate,width:150" formatter="formartDatetime">创建时间</th>
+	    </tr>
+	    </thead>
+	</table>
+	<div id="btn-applylist" >
+        <a class="sui-toolbar" id="btn-add"  text="增加" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doNew"></a>
+        <a class="sui-toolbar" id="btn-modify" text="修改" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doEdit"></a>
+        <a class="sui-toolbar" id="btn-del" text="删除" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doDel"></a>
+	</div>
+</div>
+
+
+
+<div id="qzstore_form_window" style="display: none;">
+	<div class="clearfix mt20">
+		<form id="qzstore_form"  class="sui-form" method="post" enctype="multipart/form-data"  zdata-options={"url":"${adminCtx}/backstage/sys/qzstoresetSaveData.htm?jsonCallBack=?","callBack":"callBackFn"}>
+			<input type="hidden" name="id" id="id" value=""/>
+			<dl class="form-item">
+				<dt class="title sptitle">存储名称:</dt>
+				<dd class="detail">
+					<label>
+						<input type="text" class="sui-input sui-validatebox"  validate-type="Require" id="servername" name="servername" />
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+				<dt class="title sptitle">存储类型:</dt>
+				<dd class="detail">
+					<label>
+						<input type="hidden"  id="servertype" name="servertype"
+                               data-data="[{'id':'0','text':'本地存储'},{'id':'1','text':'FTP存储'},{'id':'2','text':'SCP'}]"
+                               data-valuefield="id" data-textfield="text" data-defaultvalue="0" class="sui-combobox sui-validatebox" style="width:70px">
+						<i class="require icon-mrequire"></i>
+					</label>
+				</dd>
+			</dl>
+            <dl class="form-item">
+                <dt class="title sptitle">显示路径:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" style="width:470px;"  id="viewpath" name="viewpath" />
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+            
+            <dl class="form-item">
+                <dt class="title sptitle">本地存储地址:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" style="width:470px;"  id="localaddress" name="localaddress" />
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+			
+            <dl class="form-item">
+                <dt class="title sptitle">IP地址:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="ftpaddress" name="ftpaddress" />
+                    </label>
+                </dd>
+                <dt class="title sptitle">端口:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="ftpport" name="ftpport" />
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+            <dl class="form-item">
+                <dt class="title sptitle">用户名:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="ftpusername" name="ftpusername" />
+                    </label>
+                </dd>
+                <dt class="title sptitle">密码:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" id="ftppassword" name="ftppassword" />
+                    </label>
+                </dd>
+            </dl>
+            <br/>            
+            <dl class="form-item">
+                <dt class="title sptitle">启用:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="hidden"  id="useflag" name="useflag"
+                               data-data="[{'id':'1','text':'可用'},{'id':'0','text':'下架'}]"
+                               data-valuefield="id" data-textfield="text" data-defaultvalue="0" class="sui-combobox sui-validatebox" style="width:70px">
+                    </label>
+                </dd>
+            </dl>
+            <dl class="form-item">
+                <dt class="title sptitle">类型:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="hidden"  id="usetype" name="usetype"
+                               data-data="[{'id':'0','text':'证据存储'},{'id':'1','text':'合同扫描存储'}]"
+                               data-valuefield="id" data-textfield="text" data-defaultvalue="0" class="sui-combobox sui-validatebox" style="width:70px">
+                    </label>
+                </dd>
+            </dl>
+            <br/>
+            <dl class="form-item">
+                <dt class="title sptitle">备注:</dt>
+                <dd class="detail">
+                    <label>
+                        <input type="text" class="sui-input" style="width:400px;" id="remark" name="remark"/>
+                    </label>
+                </dd>
+            </dl>            
+		</form>
+	</div>
+</div>
+
+<script>
+	var uri_delbqapplication = '${adminCtx}/backstage/sys/qzstoresetDeleteData.htm';
+    $(function() {
+
+        $("#qzstore_form_window").Dialog({
+            width: 800,
+            height: 650,
+            title: '存储设置',
+            closed:true,
+            buttons:[{
+                id:'message-btn',
+                text:'确定',
+                buttonCls:'btn-blue',
+                handler:function(){
+                    $("#qzstore_form").submit();
+                }
+            },{
+                id:'message-btn',
+                text:'取消',
+                buttonCls:'btn-gray',
+                handler:function(){
+                    $("#qzstore_form_window").Dialog("close");
+                }
+            }]
+        });
+
+        sui.init();
+
+    });
+
+    $("#btn-search").click(function () {
+        doSearch();
+    });
+
+    function doSearch() {
+        $('#tb-dbdatagrid').Table("reload", {
+            servername:$('#search_servername').val()
+        });
+    }
+
+    CALLBACK.callBackFn=function(data){
+        if(data.code&&data.code==1){
+            message.info("提示", "操作成功", function () {
+                //关闭弹出窗
+                $("#qzstore_form_window").Dialog("close");
+                //重新加载数据
+                doSearch();
+            });
+        }else{
+            message.error("错误", data.msg, function () {
+
+            });
+        }
+    }
+
+    //新增
+    CALLBACK.doNew=function(){
+        //清除
+        $('#qzstore_form')[0].reset();
+        $('#id').val('');
+        $('#useflag').val('1');
+        $("#qzstore_form_window").Dialog("open");
+    };
+
+    //编辑
+    CALLBACK.doEdit=function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        if(rows.length==0){
+            message.warning("警告", "请选择记录", function () {});
+            return;
+        } else {
+            var formData = rows[0];
+
+            var id = formData.id;
+
+            toFillForm("#qzstore_form",rows[0]);
+            $("#useflag").Combobox('setValue',formData.useflag);
+            //初始化数据
+            $("#qzstore_form_window").Dialog("open");
+        }
+    };
+
+    //删除
+    CALLBACK.doDel= function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        var ids = [];
+        for(var index in rows){
+            ids.push(rows[index]['id']);
+        }
+
+        if( ids.length ) {
+            message.question("确认", "你确定要删除选中的数据？", function () {
+                var str = '';
+                for( i in ids ) {
+                    str += ids[i] + ((ids.length - 1) == i ?'':',');
+                }
+
+                $.ajax({
+                    type 		: "POST",
+                    dataType 	: "jsonp",
+                    url 		: uri_delbqapplication + "?jsonCallBack=?",
+                    data		: {'ids' : str},
+                    success		: function( result ) {
+                        if(result.code){
+                            message.info("提示", "删除成功",function(){
+                                //重新加载数据
+                                doSearch();
+                            });
+                        }else{
+                            message.error("错误", result.message, function () {});
+                        }
+                    }
+                });
+            });
+        } else {
+            message.warning("警告", "请选择记录", function () {
+
+            });
+        }
+    };
+
+    //字段格式化
+    CALLBACK.formartDatetime = function(index,val){
+        if($.trim(val).length > 0){
+            return new Date(val).Format("yyyy-MM-dd hh:mm:ss");
+        }
+        return '';
+    };
+
+    CALLBACK.formartuseflag = function(index,val){
+        if(val=='1')
+            return '可用';
+        return '下架';
+    };
+    CALLBACK.formartusetype = function(index,val){
+        if(val=='0')
+            return '证据存储';
+        return '合同扫描存储';
+    };
+    CALLBACK.formartservertype = function(index,val){
+        if(val=='0')
+            return '本地存储';
+        else if(val=='1')
+            return 'FTP存储';
+        else if(val=='2')
+            return 'SCP存储';
+        return '其它存储';
+    };
+  </script>
+
+</body>

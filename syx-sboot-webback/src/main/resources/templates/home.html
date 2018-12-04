@@ -1,0 +1,70 @@
+<#include "common/header-title.html" />
+
+<script src="${adminCtxStatics}/js/module/iframe.js"></script>
+<script src="${adminCtxStatics}/js/menu.js"></script>
+<script src="${adminCtxStatics}/js/utils.js"></script>
+
+<body style="overflow-y: hidden">
+
+<div class="container">
+    <div class="Mheader">
+        <h1><a href="/admin/backstage/home.htm"><img src="/statics/admin/images/login/login-logo.png" height="40"></a> 欢迎登录后台管理系统</h1>
+        <span class="top-welcome fr"><i class="icon-user"></i>
+            <strong>${(user.name)!""}</strong>
+            <a href="${adminCtx}/loginout.htm"><i class="icon-top02"></i>退出</a>
+        </span>
+    </div>
+    <div class="index-menu" id="sidebar">
+        <div id="menu">
+
+        </div>
+    </div>
+    <div class="index-content" id="main">
+
+        <div class="dynamic-tab">
+            <div class="dynamic-nav">
+                <a href="javascript:void (0);" id="arrowLeft"
+                   onclick="moveLeft()" class="tabs-prev "><i class="single-tabsprev"></i></a>
+                <a href="javascript:void (0);" id="arrowRight"
+                   onclick="moveRight()" class="tabs-next "><i class="single-tabsnext"></i></a>
+                <ul class="tabs" id="dynamic-tabs">
+                    <li class="tabs-on"><a href="javascript:void 0" onclick="toggleTabPage('')" class="home"><i
+                            class="single-home"></i></a></li>
+                </ul>
+            </div>
+            <div id="tabPageDiv">
+                <div class="tabcontents" id="dynamic-tabcontents" name="tabpage">
+                    <iframe id="iframe1" width="100%" frameborder="0" allowtransparency="true"
+                            src="${adminCtx}/introduce.htm" class="sui-iframe" name="index"></iframe>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="${adminCtxStatics}/js/home.js"></script>
+<script>
+    var ctx = "${adminCtx}";
+    var iframeWidth;
+    var iframeHeight;
+    $(function(){
+        function elstyle(){
+            $(".index-menu").height($(window).height()-80);
+            $("#menu").height($(window).height()-80);
+            $(".index-content").height($(window).height()-80);
+            $(".index-content").width($(".container").width()-220);
+            $(".index-content iframe").height($(".container").height()-123);
+            $(".index-content iframe").width($(".container").width()-220);
+            iframeWidth = $(".container").width()-220;
+            iframeHeight = $(".container").height()-123;
+        }
+        elstyle();
+        $(window).resize(function(){
+            elstyle();
+        })
+
+    })
+</script>
+</body>
+</html>

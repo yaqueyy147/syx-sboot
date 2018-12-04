@@ -1,0 +1,99 @@
+<#include "common/header-title.html" />
+
+<body>
+<div class="hlideal-tabnav-content">
+	
+	<div class="search-bg">
+	    <form action="" class="sui-form">
+	        <dl class="form-item">
+	            <dt class="title">姓名：</dt>
+	            <dd class="detail">
+	                <label>
+	                    <input type="text" class="sui-input" name="name"  id="search_name" />
+	                </label>
+	            </dd>
+	        </dl>
+	        <dl class="form-item">
+	            <dt class="title"></dt>
+	            <dd class="detail">
+	                <button type="button" class="hlideal-btn btn-blue" id="btn-search">搜索</button>
+                	<button type="reset" class="hlideal-btn btn-gray">重置</button>
+	            </dd>
+	        </dl>  
+	    </form>
+	</div>
+	<table id="tb-dbdatagrid" class="sui-datagrid table-list" zdata-options={"url":"${adminCtx}/backstage/sys/queryStaffList.htm?jsonCallBack=?","fitColumns":true,"singleSelect":true,"pagination":true,"rowcheck":true,"rownumbers":true,"rows":15,"idField":"id","toolbar":"#btn-applylist","tableCls":"table-list"}>
+        <thead>
+	    <tr>
+	        <th data-options="field:loginname">用户名</th>
+	        <th data-options="field:name">姓名</th>
+	        <th data-options="field:mobilephone">手机</th>
+	        <th data-options="field:loginflag" formatter="enableFormatter">允许登录</th>
+	    </tr>
+	    </thead>
+	</table>
+	<div id="btn-applylist" >
+        <a class="sui-toolbar" id="btn-roleset" text="权限设置" iconCls="icon-blue06" buttonCls="btn-operateblue" handler="doDataset"></a> 
+    </div>
+</div>
+
+<div id="staffdataset_frame_window">
+	<iframe id="staffdataset_frame" scrolling="no" marginwidth="0" width="100%" height="100%" frameborder="0" marginheight="0"></iframe>
+</div>
+
+
+<script>
+	var uri_staffdataset = '${adminCtx}/backstage/sys/staffdataset.htm';
+    $(function() {
+
+        $('#staffdataset_frame_window').Dialog({
+            width	: 600,
+            height	: 400,
+            title	: '设置员工权限',
+            closed	: true,
+            modal	: true,
+            fullcontent : true
+        });
+
+        sui.init();
+
+    });
+
+    $("#btn-search").click(function () {
+        doSearch();
+    });
+
+    function doSearch() {
+        $('#tb-dbdatagrid').Table("reload", {
+            dicvalue:$('#search_dicvalue').val()
+        });
+    }
+
+    //权限设置
+    CALLBACK.doDataset=function(){
+        var rows = $('#tb-dbdatagrid').Table("getSelections");
+        if(rows.length==0){
+            message.warning("警告", "请选择记录", function () {});
+            return;
+        } else {
+            var id = rows[0].id;
+            var params = $.param( { 'staffid' : id } );
+            var url = uri_staffdataset + '?' + params;
+            var $this_window = '#staffdataset_frame';
+            // 为iframe设置src
+            $('#staffdataset_frame').attr('src', url);
+
+            $("#staffdataset_frame_window").Dialog("open");
+        }
+    };
+
+    //字段格式化
+    CALLBACK.enableFormatter = function(index,val){
+        if(val=='1')
+            return '是';
+        return '否';
+    };
+
+</script>
+
+</body>

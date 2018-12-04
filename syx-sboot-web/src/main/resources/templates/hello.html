@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>这是test</title>
+</head>
+<body>
+Hello World!
+<br/>
+${test}
+<br/>
+ll4-->
+<#list ll4 as ss>
+    ${ss.family_first_name}-->${ss.family_name}
+</#list>
+<br/>
+<div ng-app="myapp">
+    <div ng-controller="mycontroller">
+        <span ng-repeat="family in familys">{{family.familyName}}<br/></span>
+    </div>
+    <div ng-controller="mycontroller01">
+        <input type="text" ng-model="tFamily.id"/>
+        <input type="text" ng-model="tFamily.familyName" />
+        <button type="button" ng-click="query()">测试一下</button><br/>
+        <span>{{familyName}}</span>
+        <span>{{tFamily.familyName}}</span>
+    </div>
+</div>
+<script src="${request.contextPath}/webjars/angularjs/1.6.6/angular.js"></script>
+<script>
+    var myapp = angular.module("myapp",[]);
+    myapp.controller("mycontroller",function ($rootScope, $scope, $http) {
+        $http({
+            url : '/sboot/query',
+            method : 'POST',
+            data : $scope.data
+        }).then(function (result) {
+            $scope.familys = result.data;
+        });
+    });
+    myapp.controller("mycontroller01",function ($rootScope, $scope, $http) {
+        $scope.tFamily = {
+            id:40,
+            familyName:"何志业"
+        };
+        $scope.query = function () {
+            $http({
+                url : '/sboot/query01',
+                method : 'POST',
+                data : $scope.tFamily
+            }).then(function (result) {
+                $scope.familyName = result.data.familyName;
+            });
+        }
+    })
+</script>
+</body>
+</html>
