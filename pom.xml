@@ -13,7 +13,10 @@
         <module>syx-sboot-common</module>
         <module>syx-sboot-webback</module>
         <module>syx-sboot-eureka</module>
-        <module>syx-sboot-provider</module>
+        <module>syx-sboot-provider01</module>
+        <module>syx-sboot-zuul</module>
+        <module>syx-sboot-provider02</module>
+
     </modules>
 
     <packaging>pom</packaging>
@@ -202,6 +205,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
